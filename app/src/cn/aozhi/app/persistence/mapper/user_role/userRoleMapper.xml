@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+<mapper namespace="UserRole">
+	<resultMap id="userRoleMap" type="cn.aozhi.app.domain.user_role.UserRole">
+		<id property="id" column="id"/>
+		<result property="userId" column="userId" />
+		<result property="roleId" column="roleId" />
+	</resultMap>
+	
+	<sql id="base_column">
+		id,userId,roleId
+	</sql>
+	
+	<!-- 插入记录 -->
+	 <insert id="insert" parameterType="cn.aozhi.app.domain.user_role.UserRole">
+		insert into t_user_role(
+			id,userId,roleId
+		)values(
+			#{id},
+			#{userId},
+			#{roleId}
+		)
+		<!-- 返回自动增长的主键id -->
+		<!-- 
+		<selectKey resultType="java.lang.Integer" keyProperty="id">
+			select @@IDENTITY as id
+		</selectKey>
+		 -->
+	</insert>
+
+	<!-- 根据id查找 -->
+	<select id="selectById" parameterType="string" resultMap="userRoleMap">
+		SELECT 
+		<include refid="base_column"/>
+		FROM 
+		t_phone_song
+		WHERE 
+		id = #{id}
+	</select>
+		
+	
+	<!-- 更新 -->
+	<update id="update" parameterType="cn.aozhi.app.domain.user_role.UserRole">
+		update t_user_role set userId=#{userId},roleId=#{roleId} where id=#{id}
+	</update>
+		
+	<!-- 根据id删除 -->	
+	<delete id="delete" parameterType="string">
+		DELETE FROM t_user_role WHERE id = #{id}
+	</delete>
+	
+	
+		<!-- 批量删除 -->
+	<delete id="batchDelete" parameterType="java.util.List">  
+	    DELETE FROM t_user_role WHERE id IN  
+	    <foreach collection="list" index="index" item="item" open="(" separator="," close=")">   
+	        #{item}
+	    </foreach>  
+	</delete>  
+	
+	
+	<!-- 数据列表 -->
+	<select id="selectByUserId" parameterType="string" resultMap="userRoleMap">
+		SELECT * FROM t_user_role WHERE userId = #{userId}
+	</select>	
+	
+	
+	<!-- 数据列表 -->
+	<select id="list" resultMap="userRoleMap">
+		SELECT * FROM t_user_role
+	</select>	
+	
+	 <!-- 数据列表（分页） -->
+	<select id="findPage" parameterType="map" resultMap="userRoleMap">
+		SELECT * FROM t_user_role limit #{startIndex},#{pageSize}
+	</select>
+	
+	<!-- 总数统计 -->
+	<select id="findPageCount" resultType="int">
+		SELECT COUNT(*) FROM t_user_role
+	</select>
+	
+</mapper>

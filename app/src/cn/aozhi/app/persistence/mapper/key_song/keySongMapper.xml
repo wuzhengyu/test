@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+<mapper namespace="KeySong">
+	<resultMap id="keySongMap" type="cn.aozhi.app.domain.key_song.KeySong">
+		<id property="id" column="id"/>
+		<result property="phoneKey" column="phoneKey"/>
+		<result property="songId" column="songId" />
+		<result property="createDate" column="createDate" />
+	</resultMap>
+	
+	<sql id="base_column">
+		id,phoneKey,songId,createDate
+	</sql>
+	
+	<!-- 插入记录 -->
+	 <insert id="insert" parameterType="cn.aozhi.app.domain.key_song.KeySong">
+		insert into t_key_song(
+			id,phoneKey,songId,createDate
+		)values(
+			#{id},
+			#{phoneKey},
+			#{songId},
+			#{createDate}
+		)
+		<!-- 返回自动增长的主键id -->
+		<!-- 
+		<selectKey resultType="java.lang.Integer" keyProperty="id">
+			select @@IDENTITY as id
+		</selectKey>
+		 -->
+	</insert>
+
+	<!-- 根据id查找 -->
+	<select id="selectById" parameterType="string" resultMap="keySongMap">
+		SELECT 
+		<include refid="base_column"/>
+		FROM 
+		t_key_song
+		WHERE 
+		id = #{id}
+	</select>
+
+
+	<!-- 更新 -->
+	<update id="update" parameterType="cn.aozhi.app.domain.key_song.KeySong">
+		update t_key_song set phoneKey=#{phoneKey},songId=#{songId},createDate=#{createDate} where id=#{id}
+	</update>
+		
+	<!-- 根据id删除 -->	
+	<delete id="delete" parameterType="string">
+		DELETE FROM t_key_song WHERE id = #{id}
+	</delete>
+	
+	<!-- 数据列表 -->
+	<select id="list" resultMap="keySongMap">
+		SELECT * FROM t_key_song
+	</select>	
+	
+	
+	<!-- 根据phoneKey和songId查询 -->
+	<select id="selectByKeyAndId" parameterType="map" resultMap="keySongMap">
+		SELECT * FROM t_key_song
+		<where>
+			<if test="phoneKey != null and phoneKey != ''">
+				phoneKey = #{phoneKey}
+			</if>
+			<if test="songId != null and songId != ''">
+				and	songId = #{songId}
+			</if>
+		</where>
+		 ORDER BY  ${sortColumn} DESC
+	</select>
+	
+	
+	
+	 <!-- 数据列表（分页） -->
+	<select id="findPage" parameterType="map" resultMap="keySongMap">
+		SELECT * FROM t_key_song limit #{startIndex},#{pageSize}
+	</select>
+	
+	<!-- 总数统计 -->
+	<select id="findPageCount" resultType="int">
+		SELECT COUNT(*) FROM t_key_song
+	</select>
+	
+	
+	
+	
+</mapper>

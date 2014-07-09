@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+<mapper namespace="Menu">
+	<resultMap id="menuMap" type="cn.aozhi.app.domain.menu.Menu">
+		<id property="id" column="id"/>
+		<result property="menuName" column="menuName" />
+		<result property="menuUrl" column="menuUrl" />
+		<result property="menuSort" column="menuSort" />
+		<result property="createDate" column="createDate" />
+		<result property="description" column="description" />
+	</resultMap>
+	
+	<sql id="base_column">
+		id,menuName,menuUrl,menuSort,createDate,description
+	</sql>
+	
+	<!-- 插入记录 -->
+	 <insert id="insert" parameterType="cn.aozhi.app.domain.menu.Menu">
+		insert into t_menu(
+			id,menuName,menuUrl,menuSort,createDate,description
+		)values(
+			#{id},
+			#{menuName},
+			#{menuUrl},
+			#{menuSort},
+			now(),
+			#{description}
+		)
+		<!-- 返回自动增长的主键id -->
+		<!-- 
+		<selectKey resultType="java.lang.Integer" keyProperty="id">
+			select @@IDENTITY as id
+		</selectKey>
+		 -->
+	</insert>
+
+	<!-- 根据id查找 -->
+	<select id="selectById" parameterType="string" resultMap="menuMap">
+		SELECT 
+		<include refid="base_column"/>
+		FROM 
+		t_menu
+		WHERE 
+		id = #{id}
+	</select>
+	
+	
+	<!-- 更新 -->
+	<update id="update" parameterType="cn.aozhi.app.domain.menu.Menu">
+		update t_menu set 
+		menuName = #{menuName},
+		menuUrl = #{menuUrl},
+		menuSort = #{menuSort},
+		createDate = now(),
+		description = #{description} 
+		where id = #{id}
+	</update>
+		
+	<!-- 根据id删除 -->	
+	<delete id="delete" parameterType="string">
+		DELETE FROM t_menu WHERE id = #{id}
+	</delete>
+	
+	
+	<!-- 批量查询 -->
+	<select id="batchSelect" parameterType="java.util.List"  resultMap="menuMap">  
+	    select 
+	    <include refid="base_column"/>
+	    FROM t_menu WHERE id IN  
+	    <foreach collection="list" index="index" item="item" open="(" separator="," close=")">   
+	        #{item}
+	    </foreach>
+	    ORDER BY menuSort asc
+	</select>  
+	
+	<!-- 数据列表 -->
+	<select id="list" resultMap="menuMap">
+		SELECT * FROM t_menu ORDER BY menuSort asc
+	</select>	
+	
+	 <!-- 数据列表（分页） -->
+	<select id="findPage" parameterType="map" resultMap="menuMap">
+		SELECT * FROM t_menu limit #{startIndex},#{pageSize}
+	</select>
+	
+	<!-- 总数统计 -->
+	<select id="findPageCount" resultType="int">
+		SELECT COUNT(*) FROM t_menu
+	</select>
+	
+</mapper>

@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+<mapper namespace="Music">
+	<resultMap id="musicMap" type="cn.aozhi.app.domain.music.Music">
+		<id property="id" column="id"/>
+		<result property="musicName" column="musicName" />
+		<result property="description" column="description" />
+		<result property="musicHost" column="musicFirsrtUrl" />
+		<result property="musicPath" column="musicPath" />
+		<result property="createDate" column="createDate"/>
+		<result property="musicType" column="musicType"/>
+		<result property="contentType" column="contentType"/>
+	</resultMap>
+	<sql id="base_column">
+		id,
+		musicName,
+		description,
+		musicHost,
+		musicPath,
+		createDate,
+		musicType,
+		contentType
+	</sql>
+	
+	<!-- 插入记录 -->
+	 <insert id="insert" parameterType="cn.aozhi.app.domain.music.Music">
+		insert into t_music(
+			id,
+			musicName,
+			musicHost,
+			musicPath,
+			createDate,
+			musicType,
+			contentType,
+			description
+		)values(
+			#{id},
+			#{musicName},
+			#{musicHost},
+			#{musicPath},
+			now(),
+			#{musicType},
+			#{contentType},
+			#{description}
+		)
+		<!-- 返回自动增长的主键id
+		<selectKey resultType="java.lang.Integer" keyProperty="id">
+			select @@IDENTITY as id
+		</selectKey>
+		 -->
+	</insert>
+
+	<!-- 根据id查找 -->
+	<select id="selectById" parameterType="string" resultMap="musicMap">
+		SELECT 
+		<include refid="base_column"/>
+		FROM 
+		t_music
+		WHERE 
+		id = #{id}
+	</select>
+		
+		
+	<!-- 根据username查找 -->
+	<select id="selectByMusicname" parameterType="string" resultMap="musicMap">
+		SELECT 
+		<include refid="base_column"/>
+		FROM 
+		t_music
+		WHERE 
+		musicName = #{musicName}
+	</select>
+	
+	<!-- 更新 -->
+	<update id="update" parameterType="cn.aozhi.app.domain.music.Music">
+		update t_music set 
+			musicName=#{musicName},
+			musicHost=#{musicHost},
+			musicPath=#{musicPath},
+			createDate= now(),
+			musicType=#{musicType},
+			contentType=#{contentType},
+			description=#{description}
+		    where id=#{id}
+	</update>
+		
+	<!-- 根据id删除 -->	
+	<delete id="delete" parameterType="string">
+		DELETE FROM t_music WHERE id = #{id}
+	</delete>
+	
+	<!-- 数据列表 -->
+	<select id="list" resultMap="musicMap">
+		SELECT * FROM t_music
+	</select>	
+	
+	 <!-- 数据列表（分页） -->
+	<select id="findPage" parameterType="map" resultMap="musicMap">
+		SELECT * FROM t_music
+		<where>
+			<if test="musicType !=null and musicType!=''">
+				musicType = #{musicType}
+			</if>
+		</where>
+		 ORDER BY  ${sortColumn} DESC limit #{startIndex},#{pageSize} 
+	</select>
+	
+	<!-- 总数统计 -->
+	<select id="findPageCount" parameterType="map" resultType="int">
+		SELECT COUNT(*) FROM t_music
+		<where>
+			<if test="musicType !=null and musicType!=''">
+				musicType = #{musicType}
+			</if>
+		</where>
+	</select>
+	
+</mapper>

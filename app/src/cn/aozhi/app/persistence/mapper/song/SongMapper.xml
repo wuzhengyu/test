@@ -1,0 +1,145 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+<mapper namespace="Song">
+	<resultMap id="songMap" type="cn.aozhi.app.domain.song.Song">
+		<id property="id" column="id"/>
+		<result property="songName" column="songName" />
+		<result property="description" column="description" />
+		<result property="clickNum" column="clickNum" />
+		<result property="ringtoneNum" column="ringtoneNum" />
+		<result property="colorRingToneNum" column="colorRingToneNum" />
+		<result property="songHost" column="songHost" />
+		<result property="songPath" column="songPath" />
+		<result property="createDate" column="createDate"/>
+		<result property="songType" column="songType"/>
+		<result property="contentType" column="contentType"/>
+	</resultMap>
+	
+	<sql id="base_column">
+		id,
+		songName,
+		description,
+		clickNum,
+		ringtoneNum,
+		colorRingToneNum,
+		songHost,
+		songPath,
+		createDate,
+		songType,
+		contentType
+	</sql>
+	
+	<!-- 插入记录 -->
+	 <insert id="insert" parameterType="cn.aozhi.app.domain.song.Song">
+		insert into t_song(
+			id,
+			songName,
+			clickNum,
+			ringtoneNum,
+			colorRingToneNum,
+			songHost,
+			songPath,
+			createDate,
+			songType,
+			contentType,
+			description
+		)values(
+			#{id},
+			#{songName},
+			#{clickNum},
+			#{ringtoneNum},
+			#{colorRingToneNum},
+			#{songHost},
+			#{songPath},
+			now(),
+			#{songType},
+			#{contentType},
+			#{description}
+		)
+		<!-- 返回自动增长的主键id
+		<selectKey resultType="java.lang.Integer" keyProperty="id">
+			select @@IDENTITY as id
+		</selectKey>
+		 -->
+	</insert>
+
+	<!-- 根据id查找 -->
+	<select id="selectById" parameterType="string" resultMap="songMap">
+		SELECT 
+		<include refid="base_column"/>
+		FROM 
+		t_song
+		WHERE 
+		id = #{id}
+	</select>
+		
+	<!-- 更新 -->
+	<update id="update" parameterType="cn.aozhi.app.domain.song.Song">
+		update t_song set 
+			songName = #{songName},
+			clickNum = #{clickNum},
+			ringtoneNum = #{ringtoneNum},
+			colorRingToneNum = #{colorRingToneNum},
+			songHost = #{songHost},
+			songPath = #{songPath},
+			createDate = now(),
+			songType = #{songType},
+			contentType = #{contentType},
+			description = #{description}
+		    where id = #{id}
+	</update>
+		
+	<!-- 根据id删除 -->	
+	<delete id="delete" parameterType="string">
+		DELETE FROM t_song WHERE id = #{id}
+	</delete>
+	
+	<!-- 数据列表(根据用户id去查询) -->
+	<select id="myList" parameterType="map" resultMap="songMap">
+	SELECT * FROM (SELECT * FROM t_song as s WHERE s.id IN (select songId
+	from t_phone_song as p WHERE p.phoneId = #{phoneId})) r 
+	 <if test="sortColumn!=null and sortColumn!=''">
+		  ORDER BY ${sortColumn} DESC
+	 </if>
+	 limit #{startIndex},#{pageSize}
+	</select>	
+	
+	<select id="myListCount" parameterType="map" resultType="int">
+		SELECT count(*) FROM (SELECT * FROM t_song as s WHERE s.id IN (select songId
+		from t_phone_song as p WHERE p.phoneId = #{phoneId})) r 
+	</select>	
+	
+	
+	
+	<!-- 数据列表(不包括当前用户的数据) -->
+	<select id="otherList" parameterType="map" resultMap="songMap">
+	SELECT * FROM (SELECT * FROM t_song as s WHERE s.id IN (select songId
+	from t_phone_song as p WHERE p.phoneId &lt;&gt; #{phoneId})) r 
+	 <if test="sortColumn!=null and sortColumn!=''">
+		  ORDER BY ${sortColumn} DESC
+	 </if>
+	 limit #{startIndex},#{pageSize}
+	</select>	
+	
+	<select id="otherListCount" parameterType="map" resultType="int">
+		SELECT count(*) FROM (SELECT * FROM t_song as s WHERE s.id IN (select songId
+		from t_phone_song as p WHERE p.phoneId &lt;&gt; #{phoneId})) r 
+	</select>
+	
+	
+	 <!-- 数据列表（分页） -->
+	<select id="findPage" parameterType="map" resultMap="songMap">
+		 SELECT * FROM t_song
+		 <if test="sortColumn!=null and sortColumn!=''">
+		  ORDER BY ${sortColumn} DESC
+		 </if>
+		  limit #{startIndex},#{pageSize}
+	</select>
+	
+	<!-- 总数统计 -->
+	<select id="findPageCount" resultType="int">
+		SELECT COUNT(*) FROM t_song
+	</select>
+	
+</mapper>
