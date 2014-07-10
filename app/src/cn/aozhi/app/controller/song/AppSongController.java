@@ -410,7 +410,7 @@ public class AppSongController {
 			params.put("fmt", fmt);
 			params.put("remixid", remixid);
 
-			logger.info("1、================>提交查询及获取合成歌曲请求开始,remixid="+songId);
+			logger.info("1、================>提交查询及获取合成歌曲请求开始");
 			try {
 				Thread.sleep(1000);
 			} catch (InterruptedException e) {
