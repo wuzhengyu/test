@@ -11,6 +11,6 @@ public class ApiConfigs {
 	protected static String appid ="9sky0001";
 
 	protected static String appkey="27f2acb90f4b5147074b331db1c61cc7";
-	
+	   
 
 }
