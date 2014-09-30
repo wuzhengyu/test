@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.UnsupportedEncodingException;
 import java.util.Map;
 
 import org.apache.commons.io.IOUtils;
@@ -20,11 +21,14 @@ import org.apache.http.entity.mime.MultipartEntity;
 import org.apache.http.entity.mime.MultipartEntityBuilder;
 import org.apache.http.entity.mime.content.ContentBody;
 import org.apache.http.entity.mime.content.FileBody;
+import org.apache.http.entity.mime.content.StringBody;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.util.CharsetUtils;
 import org.apache.log4j.Logger;
+
+import com.google.common.collect.Maps;
 
 /**
  * httpClient工具类
@@ -225,5 +229,21 @@ public class HttpClientUtil {
 	public static String getFileName(String url){
     	String[] str = url.split("remixfile=");
     	return str[1];
+	}
+	
+	public static void main(String[] args) throws Exception {
+		String url="http://app.imusicapp.cn/fengchao/rpc_ajax?appid=5883&op=getversion&IMSI=873366511151048";
+		url="http://app.imusicapp.cn/fengchao/preindex?appid=5883&IMSI=873366511151048&versioncode=1";
+		
+		String message="";
+		Map<String, ContentBody> params = Maps.newHashMap();
+
+
+		StringBody app_id = new StringBody("5883");
+		StringBody op = new StringBody("getversion");
+		//params.put("appid", app_id);
+		//params.put("op", op);
+		String result=post(url, params);
+		System.out.println("++>"+result);
 	}
 }
